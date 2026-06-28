@@ -46,13 +46,13 @@ int main()
           std::string fullPath = dictionary + "/" + cmd;
           if (access(fullPath.c_str(), X_OK) == 0)
           {
+            isBuiltIn = true;
             std::cout << cmd << " is " << fullPath << std::endl;
-            break;
           }
         }
       }
 
-      else
+      if (isBuiltIn == false)
       {
         std::cout << cmd << ": not found" << std::endl;
       }
