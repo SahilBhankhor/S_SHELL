@@ -32,7 +32,7 @@ int main()
       }
       else
       {
-        std::cout << command << ": not found " << std::endl;
+        std::cout << command.substr(5) << ": not found " << std::endl;
       }
     }
   }
