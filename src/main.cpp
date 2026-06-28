@@ -47,6 +47,7 @@ int main()
           if (access(fullPath.c_str(), X_OK) == 0)
           {
             std::cout << cmd << " is " << fullPath << std::endl;
+            break;
           }
         }
       }
