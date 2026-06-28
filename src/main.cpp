@@ -65,7 +65,6 @@ int main()
         std::cout << cmd << ": not found" << std::endl;
       }
     }
-
     else // " command not found " statement
     {
       std::cout << command << ": command not found" << std::endl;
