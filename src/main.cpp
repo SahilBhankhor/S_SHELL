@@ -48,11 +48,12 @@ int main()
           {
             isBuiltIn = true;
             std::cout << cmd << " is " << fullPath << std::endl;
+            break;
           }
         }
       }
 
-      if (isBuiltIn == false)
+      if (!isBuiltIn)
       {
         std::cout << cmd << ": not found" << std::endl;
       }
