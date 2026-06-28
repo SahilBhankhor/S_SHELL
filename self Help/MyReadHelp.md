@@ -82,7 +82,11 @@
             + converts strings of C++ into C-style string by providing string address (now path.c_str() is treated as a C-style string )
             + for Linux , to use .C_str() and X_OK use ```#include <unistd.h>``` 
             + we create a var "fullpath" : 
-        ``` std::string fullPath = dictionary + '/' + args ;
-            if(!access(fullPath , X_OK))
+        ```cpp
+        std::string fullPath = dictionary + '/' + args ;
+        if(!access(fullPath.c_str() , X_OK)){
+            isBuiltIn = true;
+            std::cout << cmd << " is " << fullPath << std::endl;
+            break;
+        }
         ```
-    [reference code](/accessPath.cpp)
