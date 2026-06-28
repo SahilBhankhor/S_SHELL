@@ -49,7 +49,6 @@ int main()
         // we read each path until delimiter hits and stores that path to var "dictionary"
         // if any path contains that command , then it can be declared/considered as a path or path file
         while (std::getline(ssPath, dictionary, delimiter))
-
         {
           std::string fullPath = dictionary + "/" + cmd;
           if (access(fullPath.c_str(), X_OK) == 0)
