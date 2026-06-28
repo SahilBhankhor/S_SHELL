@@ -26,16 +26,14 @@ int main()
 
     if (command.substr(0, 4) == "type")
     {
-      bool isBuiltIn = false;
       if (command.substr(5) == "echo" || command.substr(5) == "exit" || command.substr(5) == "type")
       {
-        isBuiltIn = true;
         std::cout << command.substr(5) << " is a shell builtin " << std::endl;
       }
-    }
-    else
-    {
-      std::cout << command << ": not found " << std::endl;
+      else
+      {
+        std::cout << command << ": not found " << std::endl;
+      }
     }
   }
 }
