@@ -40,7 +40,7 @@ int main()
         std::string path = getenv("PATH");
         std::stringstream ssPath(path);
         std::string dictionary;
-        char delimiter = ';';
+        char delimiter = ':';
         while (std::getline(ssPath, dictionary, delimiter))
         {
           std::string fullPath = dictionary + "/" + cmd;
