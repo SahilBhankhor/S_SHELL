@@ -1,7 +1,54 @@
 #include <iostream>
 #include <string>
-#include <unistd.h> // used for X_OK , c_str() and access()
+#include <unistd.h> // used for X_OK , c_str() and access() , fork()
 #include <sstream>  // used to convert string to file stream
+#include <vector>
+#include <sys/types.h> // for pid_t , uid_t and gid_t etc.
+#include <sys/wait.h>  // for wait() and waitpid()
+
+std::vector<std::string> inBuiltCommands = {"echo", "exit", "type"};
+
+/*
+
+  simplifying everything I have done , until the implementation of echo exit and type commands
+
+*/
+
+void useEchoCommand(const std::string &userInput) // using const to prevent accidental changes (for any ranges) to the original string
+{
+  std::cout << userInput.substr(5) << std::endl;
+}
+
+void useTypeCommand(const std::string &checkCommand, bool &isBuiltIn)
+{
+  for (std::string CMD : inBuiltCommands)
+  {
+    if (CMD == checkCommand)
+    {
+      isBuiltIn = true;
+      std::cout << checkCommand << " is a shell builtin" << std::endl;
+    }
+  }
+}
+
+void checkCommandAsPath(const std::string &checkCommand, bool &isBuiltIn)
+{
+  std::string PATH = getenv("PATH");
+  std::stringstream ssPATH(PATH);
+  char delimiter = ';';
+  std::string dictionary;
+
+  while (std::getline(ssPATH, dictionary, delimiter))
+  {
+    std::string currentFullPATH = dictionary + '/' + checkCommand;
+    if (!access(currentFullPATH.c_str(), X_OK))
+    {
+      isBuiltIn = true;
+      std::cout << checkCommand << " is " << currentFullPATH << std::endl;
+      break;
+    }
+  }
+}
 
 int main()
 {
@@ -25,10 +72,11 @@ int main()
 
     else if (command.substr(0, 4) == "echo") // to print whatever is written right after the "echo "
     {
-      std::cout << command.substr(5) << std::endl;
+      useEchoCommand(command);
     }
 
-    else if (command.substr(0, 4) == "type") // to check whether a command is a builtin, any path / path file , or unrecognized
+    /*
+     else if (command.substr(0, 4) == "type") // to check whether a command is a builtin, any path / path file , or unrecognized
     {
       std::string cmd = command.substr(5);
       bool isBuiltIn = false;
@@ -65,6 +113,23 @@ int main()
         std::cout << cmd << ": not found" << std::endl;
       }
     }
+
+    */
+    else if (command.substr(0, 4) == "type")
+    {
+      bool isBuiltIn = false;
+      std::string checkCommand = command.substr(5);
+      useTypeCommand(checkCommand, isBuiltIn);
+      if (!isBuiltIn)
+      {
+        checkCommandAsPath(checkCommand, isBuiltIn);
+      }
+      if (!isBuiltIn)
+      {
+        std::cout << checkCommand << ": not found" << std::endl;
+      }
+    }
+
     else // " command not found " statement
     {
       std::cout << command << ": command not found" << std::endl;
