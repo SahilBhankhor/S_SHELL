@@ -49,7 +49,8 @@ void cdCommand(const std::string &changeto)
   }
   if (chdir(changeto.c_str()) != 0)
   {
-    perror("chdir");
+    // perror("cd");  // perror() only prints format : <prefix>: <strerror(errno)>
+    std::cerr << "cd: " << changeto << ": " << strerror(errno) << std::endl;
   }
 }
 
