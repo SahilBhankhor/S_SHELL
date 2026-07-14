@@ -29,13 +29,29 @@ char delimiter = ';';
 char delimiter = ':';
 #endif
 
-std::vector<std::string> inBuiltCommands = {"echo", "exit", "type", "pwd"};
+std::vector<std::string> inBuiltCommands = {"echo", "exit", "type", "pwd", "cd"};
 
 /*
 
   simplifying everything I have done , until the implementation of echo exit and type commands
 
 */
+
+void cdCommand(const std::string &changeto)
+{
+  if (changeto.empty())
+    return;
+  if (changeto == "~")
+  {
+    std::string home = getenv("HOME");
+    chdir(home.c_str());
+    return;
+  }
+  if (!chdir(path.c_str()))
+  {
+    perror("cd");
+  }
+}
 
 void useEchoCommand(const std::string &userInput) // using const to prevent accidental changes (for any ranges) to the original string
 {
@@ -141,6 +157,10 @@ int main()
     else if (command.substr(0, 3) == "pwd")
     {
       pwdCommand();
+    }
+    else if (command.substr(0, 2) == "cd")
+    {
+      cdCommand(command.substr(3));
     }
     else if (command.substr(0, 4) == "echo") // to print whatever is written right after the "echo "
     {
