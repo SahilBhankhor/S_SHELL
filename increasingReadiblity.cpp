@@ -12,13 +12,11 @@ one and only purpose of this file is to take/copy code from main.cpp and rewrite
 
 std::vector<std::string> inBuiltCommands = {"echo", "exit", "type"};
 
-// optimising or Re-writing the "Echo" command
 void useEchoCommand(const std::string &userInput) // using const to prevent accidental changes (for any ranges) to the original string
 {
     std::cout << userInput.substr(5) << std::endl;
 }
 
-// optimising or Re-writing the "type" command
 void useTypeCommand(const std::string &checkCommand, bool &isBuiltIn)
 {
 

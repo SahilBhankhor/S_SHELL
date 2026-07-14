@@ -6,6 +6,12 @@
 #include <sys/types.h> // for pid_t , uid_t and gid_t etc.
 #include <sys/wait.h>  // for wait() and waitpid()
 
+#ifdef _WIN32
+char delimiter = ';';
+#else
+char delimiter = ':';
+#endif
+
 std::vector<std::string> inBuiltCommands = {"echo", "exit", "type"};
 
 /*
@@ -31,11 +37,11 @@ void useTypeCommand(const std::string &checkCommand, bool &isBuiltIn)
   }
 }
 
-void checkCommandAsPath(const std::string &checkCommand, bool &isBuiltIn)
+bool checkCommandAsPath(const std::string &checkCommand, std::string &fullPath)
 {
   std::string PATH = getenv("PATH");
   std::stringstream ssPATH(PATH);
-  char delimiter = ';';
+  // char delimiter = ':';
   std::string dictionary;
 
   while (std::getline(ssPATH, dictionary, delimiter))
@@ -43,13 +49,59 @@ void checkCommandAsPath(const std::string &checkCommand, bool &isBuiltIn)
     std::string currentFullPATH = dictionary + '/' + checkCommand;
     if (!access(currentFullPATH.c_str(), X_OK))
     {
-      isBuiltIn = true;
-      std::cout << checkCommand << " is " << currentFullPATH << std::endl;
-      break;
+      fullPath = currentFullPATH;
+      return true;
     }
   }
+  return false;
 }
 
+void runExternalCommand(const std::string &command)
+{
+  // convert sting to stream
+  std::stringstream ss(command);
+
+  // push all arguments to a vector
+  std::vector<std::string> arguments;
+  std::string word;
+  while (ss >> word)
+  {
+    arguments.push_back(word);
+  }
+
+  // find the executable file path
+  std::string execPATH;
+  if (!checkCommandAsPath(arguments[0], execPATH))
+  {
+    std::cout << arguments[0] << ": command not found" << std::endl;
+    return;
+  }
+  //  convert std::string ---> char*
+  std::vector<char *> argvs;
+  for (std::string &arg : arguments)
+  {
+    argvs.push_back(arg.data());
+  }
+  argvs.push_back(nullptr);
+
+  // create a child process
+  pid_t pid = fork();
+  if (pid == 0)
+  {
+    // child process
+    execv(execPATH.c_str(), argvs.data());
+
+    // if execvp fails :
+    perror("execv");
+    exit(EXIT_FAILURE);
+  }
+  else if (pid > 0)
+  {
+    // parent
+    int status;
+    waitpid(pid, &status, 0); // works like getline(cin, command)
+  }
+}
 int main()
 {
   // flushes the buffer after every std::cout / std::cerr
@@ -60,7 +112,7 @@ int main()
   while (true)
   {
     std::cout << "$ "; // basic symbol for all the command prompts
-
+    std::cout.flush();
     // taking user input using getline and input stream( std::cin )
     std::string command;
     std::getline(std::cin, command);
@@ -76,6 +128,9 @@ int main()
     }
 
     /*
+
+      ----------------------------LESSER READABLE CODE FOR TYPE COMMAND--------------------------------------
+
      else if (command.substr(0, 4) == "type") // to check whether a command is a builtin, any path / path file , or unrecognized
     {
       std::string cmd = command.substr(5);
@@ -122,7 +177,12 @@ int main()
       useTypeCommand(checkCommand, isBuiltIn);
       if (!isBuiltIn)
       {
-        checkCommandAsPath(checkCommand, isBuiltIn);
+        std::string fullPath;
+        if (checkCommandAsPath(checkCommand, fullPath))
+        {
+          isBuiltIn = true;
+          std::cout << checkCommand << " is " << fullPath << std::endl;
+        }
       }
       if (!isBuiltIn)
       {
@@ -130,9 +190,9 @@ int main()
       }
     }
 
-    else // " command not found " statement
+    else
     {
-      std::cout << command << ": command not found" << std::endl;
+      runExternalCommand(command);
     }
   }
 
