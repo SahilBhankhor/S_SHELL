@@ -6,9 +6,10 @@
 #include <climits>
 #include <sys/types.h> // for pid_t , uid_t and gid_t etc.
 #include <sys/wait.h>  // for wait() and waitpid()
-
+#include <filesystem>
 void pwdCommand()
 {
+  /**
   char *pwd_buffer = getcwd(nullptr, 0);
   if (pwd_buffer != nullptr)
   {
@@ -16,6 +17,10 @@ void pwdCommand()
     std::cout << pwd_buffer << std::endl;
     std::free(pwd_buffer);
   }
+   *
+   */
+
+  std::cout << std::filesystem::current_path().string() << std::endl; // .string() is used to avoid extar double quotes that are caused by filesystem.
 }
 
 #ifdef _WIN32
