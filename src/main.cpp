@@ -47,7 +47,7 @@ void cdCommand(const std::string &changeto)
     chdir(home.c_str());
     return;
   }
-  if (!chdir(path.c_str()))
+  if (chdir(changeto.c_str()) != 0)
   {
     perror("cd");
   }
