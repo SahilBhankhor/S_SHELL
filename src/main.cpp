@@ -3,6 +3,7 @@
 #include <unistd.h> // used for X_OK , c_str() , getcwd() , access() , fork()
 #include <sstream>  // used to convert string to file stream
 #include <vector>
+#include <cerrno>
 #include <climits>
 #include <sys/types.h> // for pid_t , uid_t and gid_t etc.
 #include <sys/wait.h>  // for wait() and waitpid()
