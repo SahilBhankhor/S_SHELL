@@ -49,7 +49,7 @@ void cdCommand(const std::string &changeto)
   }
   if (chdir(changeto.c_str()) != 0)
   {
-    perror("cd");
+    perror("chdir");
   }
 }
 
