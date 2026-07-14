@@ -1,10 +1,22 @@
 #include <iostream>
 #include <string>
-#include <unistd.h> // used for X_OK , c_str() and access() , fork()
+#include <unistd.h> // used for X_OK , c_str() , getcwd() , access() , fork()
 #include <sstream>  // used to convert string to file stream
 #include <vector>
+#include <climits>
 #include <sys/types.h> // for pid_t , uid_t and gid_t etc.
 #include <sys/wait.h>  // for wait() and waitpid()
+
+void pwdCommand()
+{
+  char *pwd_buffer = getcwd(nullptr, 0);
+  if (pwd_buffer != nullptr)
+  {
+    // std::cout << "Path:\n" << "____\n" << pwd_buffer << "\n";
+    std::cout << pwd_buffer << std::endl;
+    std::free(pwd_buffer);
+  }
+}
 
 #ifdef _WIN32
 char delimiter = ';';
@@ -12,7 +24,7 @@ char delimiter = ';';
 char delimiter = ':';
 #endif
 
-std::vector<std::string> inBuiltCommands = {"echo", "exit", "type"};
+std::vector<std::string> inBuiltCommands = {"echo", "exit", "type", "pwd"};
 
 /*
 
@@ -121,7 +133,10 @@ int main()
     {
       break;
     }
-
+    else if (command.substr(0, 3) == "pwd")
+    {
+      pwdCommand();
+    }
     else if (command.substr(0, 4) == "echo") // to print whatever is written right after the "echo "
     {
       useEchoCommand(command);
