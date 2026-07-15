@@ -40,19 +40,10 @@ std::vector<std::string> inBuiltCommands = {"echo", "exit", "type", "pwd", "cd"}
 
 void cdCommand(const std::string &changeto)
 {
-  if (changeto.empty())
+  if (changeto == "" || chdir(changeto.c_str()) == 0)
     return;
-  if (changeto == "~")
-  {
-    std::string home = getenv("HOME");
-    chdir(home.c_str());
-    return;
-  }
-  if (chdir(changeto.c_str()) != 0)
-  {
-    // perror("cd");  // perror() only prints format : <prefix>: <strerror(errno)>
-    std::cerr << "cd: " << changeto << ": " << strerror(errno) << std::endl;
-  }
+  std::cout << "cd: " << changeto << ": No such file or directory" << std::endl;
+  return;
 }
 
 void useEchoCommand(const std::string &userInput) // using const to prevent accidental changes (for any ranges) to the original string
