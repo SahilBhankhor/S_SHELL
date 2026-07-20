@@ -151,12 +151,12 @@ std::vector<std::string> parser(std::string &input) // function "parser" of retu
   std::vector<std::string> args;
   std::string word;
 
-  State state = States::NormalState; // create and set initial state to Normal
+  States currentState = States::NormalState; // create and set initial state to Normal
 
   for (char ch : input) // iterate over each character of "input" (spaces included)
   {
     // perform different actions depending on the current state
-    switch (state)
+    switch (currentState)
     {
     case (States::NormalState):
       if (ch == ' ')
@@ -169,11 +169,11 @@ std::vector<std::string> parser(std::string &input) // function "parser" of retu
         // if facing single or double quotes, change the state otherwise add the current word to the "args" vector
         else if (ch == '"')
         {
-          state = States::DoubleQuote;
+          currentState = States::DoubleQuote;
         }
         else if (ch == '\'')
         {
-          state = States::SingleQuote;
+          currentState = States::SingleQuote;
         }
         else
         {
@@ -194,7 +194,7 @@ std::vector<std::string> parser(std::string &input) // function "parser" of retu
     case (States::SingleQuote):
       if (ch == '\'')
       {
-        state = States::NormalState;
+        currentState = States::NormalState;
       }
       else
       {
@@ -205,7 +205,7 @@ std::vector<std::string> parser(std::string &input) // function "parser" of retu
     case (States::DoubleQuote):
       if (ch == '"')
       {
-        state = States::NormalState;
+        currentState = States::NormalState;
       }
       else
       {
