@@ -43,6 +43,15 @@ void cdCommand(const std::string &changeto)
 {
   if (changeto == "" || chdir(changeto.c_str()) == 0)
     return;
+  if (changeto == "~")
+  {
+    const char *home = getenv("HOME");
+    if (home)
+    {
+      chdir(home);
+      return;
+    }
+  }
   std::cout << "cd: " << changeto << ": No such file or directory" << std::endl;
   return;
 }
