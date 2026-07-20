@@ -254,7 +254,6 @@ int main()
       std::string input = command.substr(5);
       parser(input);
     }
-
     /*
 
       ----------------------------LESSER READABLE CODE FOR TYPE COMMAND--------------------------------------
