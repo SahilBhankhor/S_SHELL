@@ -139,6 +139,89 @@ void runExternalCommand(const std::string &command)
   }
 }
 
+enum class States // create enum to store 3 possible states
+{
+  NormalState,
+  SingleQuote,
+  DoubleQuote
+};
+
+std::vector<std::string> parser(std::string &input) // function "parser" of return-type std::vector
+{
+  std::vector<std::string> args;
+  std::string word;
+
+  State state = States::NormalState; // create and set initial state to Normal
+
+  for (char ch : input) // iterate over each character of "input" (spaces included)
+  {
+    // perform different actions depending on the current state
+    switch (state)
+    {
+    case (States::NormalState):
+      if (ch == ' ')
+      {
+        if (!word.empty())
+        {
+          args.push_back(word);
+          word.clear(); // clearing the item/value in "word" after it is pushed back to the vector "args"
+        }
+        // if facing single or double quotes, change the state otherwise add the current word to the "args" vector
+        else if (ch == '"')
+        {
+          state = States::DoubleQuote;
+        }
+        else if (ch == '\'')
+        {
+          state = States::SingleQuote;
+        }
+        else
+        {
+          word += ch;
+        }
+      }
+      break;
+
+      //  if current state is same as the facing word
+      /*
+          i.e
+                 state : SingleQuote and facing word : '
+               or
+                 state : DoubleQuote and facing word : "
+               then change state to NormalState.
+      */
+
+    case (States::SingleQuote):
+      if (ch == '\'')
+      {
+        state = States::NormalState;
+      }
+      else
+      {
+        word += ch;
+      }
+      break;
+
+    case (States::DoubleQuote):
+      if (ch == '"')
+      {
+        state = States::NormalState;
+      }
+      else
+      {
+        word += ch;
+      }
+      break;
+    }
+  }
+
+  if (!word.empty())
+  {
+    args.push_back(word);
+  }
+  return args;
+}
+
 int main()
 {
   // flushes the buffer after every std::cout / std::cerr
@@ -168,7 +251,7 @@ int main()
     }
     else if (command.substr(0, 4) == "echo") // to print whatever is written right after the "echo "
     {
-      useEchoCommand(command);
+      parser(command.substr(5));
     }
 
     /*
@@ -233,7 +316,6 @@ int main()
         std::cout << checkCommand << ": not found" << std::endl;
       }
     }
-
     else
     {
       runExternalCommand(command);
