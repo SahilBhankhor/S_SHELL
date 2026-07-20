@@ -251,7 +251,8 @@ int main()
     }
     else if (command.substr(0, 4) == "echo") // to print whatever is written right after the "echo "
     {
-      parser(command.substr(5));
+      std::string input = command.substr(5);
+      parser(input);
     }
 
     /*
