@@ -8,6 +8,21 @@
 #include <sys/types.h> // for pid_t , uid_t and gid_t etc.
 #include <sys/wait.h>  // for wait() and waitpid()
 #include <filesystem>
+
+#ifdef _WIN32
+char delimiter = ';';
+#else
+char delimiter = ':';
+#endif
+
+std::vector<std::string> inBuiltCommands = {"echo", "exit", "type", "pwd", "cd"};
+
+/*
+
+  simplifying everything I have done , until the implementation of echo exit and type commands
+
+*/
+
 void pwdCommand()
 {
   /**
@@ -23,20 +38,6 @@ void pwdCommand()
 
   std::cout << std::filesystem::current_path().string() << std::endl; // .string() is used to avoid extar double quotes that are caused by filesystem.
 }
-
-#ifdef _WIN32
-char delimiter = ';';
-#else
-char delimiter = ':';
-#endif
-
-std::vector<std::string> inBuiltCommands = {"echo", "exit", "type", "pwd", "cd"};
-
-/*
-
-  simplifying everything I have done , until the implementation of echo exit and type commands
-
-*/
 
 void cdCommand(const std::string &changeto)
 {
@@ -90,7 +91,7 @@ void runExternalCommand(const std::string &command)
   // push all arguments to a vector
   std::vector<std::string> arguments;
   std::string word;
-  while (ss >> word)
+  while (ss >> word) // works like (cin >> command)
   {
     arguments.push_back(word);
   }
@@ -128,6 +129,7 @@ void runExternalCommand(const std::string &command)
     waitpid(pid, &status, 0); // works like getline(cin, command)
   }
 }
+
 int main()
 {
   // flushes the buffer after every std::cout / std::cerr
